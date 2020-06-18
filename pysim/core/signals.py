@@ -1,8 +1,9 @@
 
 
 class Signal:
-    def __init__(self):
+    def __init__(self, name):
         self._handlers = []
+        self.name = name
 
     def send(self, *args, **kwargs):
         for handler in self._handlers:
@@ -15,17 +16,19 @@ class Signal:
         self._handlers.remove(handler)
 
 
-job_created = Signal()
-job_scheduled = Signal()
-job_running = Signal()
-job_completed = Signal()
-job_canceled = Signal()
-job_error = Signal()
+job_created = Signal(name='job_created')
+job_scheduled = Signal(name='job_scheduled')
+job_running = Signal(name='job_running')
+job_completed = Signal(name='job_completed')
+job_canceled = Signal(name='job_canceled')
+job_error = Signal(name='job_error')
 
-before_job_starts = Signal()
-after_job_finishes = Signal()
+before_job_starts = Signal(name='before_job_starts')
+after_job_finishes = Signal(name='after_job_finishes')
 
-cleanup = Signal()
+cleanup = Signal(name='cleanup')
+
+keyboard_interrupt = Signal(name='SIGINT')
 
 def register_handler(signal): 
     def wrapper(func):
