@@ -16,7 +16,6 @@ environment variable PYSIM_SETTINGS.
 Consider the folder pysim/sample 
 
 ```
-cool-image-codec/
 pysim/sample
 ├── CMakeLists.txt
 ├── rect_area.c
