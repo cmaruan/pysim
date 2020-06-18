@@ -54,8 +54,3 @@ PARALLEL_INSTANCES = 1
 # send them to pysim.core.signals.keyboard_interrupt.
 CAPTURE_SIGINT = False
 
-# Sample plugins 
-PLUGINS = [
-    'pysim.plugins.LogEvents',
-    'pysim.plugins.SaveIntermediaryState',
-]

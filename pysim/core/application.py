@@ -63,7 +63,7 @@ class Job:
 
     def __str__(self):
         return '<Job id=%d status=%s>' % (self.id, self.state)
-    
+
     def __repr__(self):
         return str(self)
 
@@ -86,13 +86,13 @@ class Job:
         self.state = new_state
         if send_signal:
             Job._dispacher[new_state].send(job=self, old_state=old_state)
-        
+
     def run(self):
         if self.state != Job.SCHEDULED:
             return
-        
+
         self.set_state(Job.RUNNING)
-        
+
         if self.app_options['fake']:
             time.sleep(0.5)
         else:
@@ -127,11 +127,13 @@ class Application:
                       vars(app_options))
             job.set_state(job.SCHEDULED)
             self.job_list.append(job)
-        
+
         self._loaded_plugins = []
         for plugin_class in settings.enabled_plugins:
             plugin = plugin_class(job_list=self.job_list)
             self._loaded_plugins.append(plugin)
+        
+        signals.clear_job_queue.register_handler(self.cancell_all_jobs)
 
     def run(self):
         for job in self.job_list:
@@ -147,9 +149,16 @@ class Application:
 
         for worker in workforce:
             worker.join()
-        
+
         signals.cleanup.send()
 
+    def cancell_all_jobs(self):
+        while True:
+            try:
+                job = self.job_queue.get_nowait()
+                job.set_state(job.CANCELED)
+            except QueueEmpty:
+                return
 
     def _worker(self, id):
         while True:
@@ -158,8 +167,8 @@ class Application:
             except QueueEmpty:
                 return
 
-            job_context = {'job': copy(job)}
+            context = {'job': copy(job)}
 
-            signals.before_job_starts.send(job_context)
+            signals.before_job_starts.send(context=context)
             job.run()
-            signals.after_job_finishes.send(job_context)
+            signals.after_job_finishes.send(context=context)

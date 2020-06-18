@@ -5,15 +5,21 @@ class Signal:
         self._handlers = []
         self.name = name
 
-    def send(self, *args, **kwargs):
+    def send(self, **kwargs):
         for handler in self._handlers:
-            handler(*args, **kwargs)
+            handler(**kwargs)
 
     def register_handler(self, handler):
         self._handlers.append(handler)
     
     def unregister_handler(self, handler):
         self._handlers.remove(handler)
+    
+    def __str__(self):
+        return '<Signal name=%s handlers=%d>' % (self.name, len(self._handlers))
+    
+    def __repr__(self):
+        return str(self)
 
 
 job_created = Signal(name='job_created')
@@ -27,8 +33,8 @@ before_job_starts = Signal(name='before_job_starts')
 after_job_finishes = Signal(name='after_job_finishes')
 
 cleanup = Signal(name='cleanup')
-
-keyboard_interrupt = Signal(name='SIGINT')
+clear_job_queue = Signal(name='clear_job_queue')
+keyboard_interrupt = Signal(name='keyboard_interrupt')
 
 def register_handler(signal): 
     def wrapper(func):
