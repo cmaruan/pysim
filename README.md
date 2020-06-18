@@ -13,49 +13,111 @@ Py-Sim needs a configuration file to be able to run. The location of this file s
 environment variable PYSIM_SETTINGS. 
 
 #### Example
-Assume the following tree structure for a current project
+Consider the folder pysim/sample 
+
 ```
 cool-image-codec/
-├── bin
-│   └── codec
-├── images
-│   └── fig1.png
-│   └── fig2.png
-│   └── fig3.png
-└── simulations
-    └── pysim_settings.py
+pysim/sample
+├── CMakeLists.txt
+├── rect_area.c
+└── settings.py
+```
+First, let's compile `rect_area.c` to have a executable to work with.
+```bash
+$ cd pysim/sample
+$ mkdir build && cd build
+$ cmake ..
+$ cmake --build .
 ```
 
-The binary `codec` accepts two comand line arguments:
-* `--image`: path to an image to commpress
-* `--quality`: quality of compression. Value between 0 and 100.
+Your folder should look like this
+```bash
+$ tree pysim/sample/ -L 2
+pysim/sample/
+├── CMakeLists.txt
+├── build
+│   ├── CMakeCache.txt
+│   ├── CMakeFiles
+│   ├── Makefile
+│   ├── cmake_install.cmake
+│   └── rect_area
+├── rect_area.c
+└── settings.py
+```
 
-Assume we want to run for each image a different set of qualities. To do achieve that, we edit `pysim_settings.py` as such:
+If we inspect `pysim/sample/rect_area.c`, we'll notice two command line arguments:
+* `--height`: height of a rectagle
+* `--width`: width of a rectagle
+
+We have been asked to calculate the area for all possible rectangles of sides less than 10, where
+the height is an even number, and width is an odd number. We already have `pysim/sample/build/rect_area` that 
+calculate areas for us. Let's configure PySim to to the work for us.
+
+Take a look into `pysim/sample/settings.py` 
 
 ```python
+# file pysim/sample/settings.py
 
 # List of values for each parameter
-IMAGE_LIST = ['fig1.png', 'fig2.png', 'fig3.png', ]
-QUALITY_LIST = [10, 35, 50, 75]
+HEIGHTS = [2, 4, 6, 8]
+WIDTHS = [1, 3, 5, 7, 9]
 
-# Arguments
+# Possible values for each command line argument 
 ARGS = {
-    '--image': IMAGE_LIST,
-    '--quality': QUALITY_LIST,
+    '--height': HEIGHTS,
+    '--width': WIDTHS,
 }
 
 # Binary
-EXECUTABLE = 'bin/codec'
+EXECUTABLE = 'pysim/sample/build/rect_area'
+
+# If True, pysim will capture all SIGINT interruptions and
+# send them to pysim.core.signals.keyboard_interrupt.
+CAPTURE_SIGINT = True
+
+# Sample plugins 
+PLUGINS = [
+    'pysim.plugins.LogEvents',
+    'pysim.plugins.SaveIntermediaryState',
+    'pysim.plugins.GracefulKeyboardInterrupt',
+]
 ```
 
-From there, `pysim` will create a list of jobs from every possible combination of `IMAGE_LIST` and  `QUALITY_LIST`
+There are four variables relevant to `pysim` defined here:
 
-First, we should let pysim know where the settings file is saved. Then, simply call the module.
+##### `ARGS`
+`ARGS` is a dictionary containing all possible values a given parameter can have. For our example, --heights are even numbers below 10 and --width are odd numbers below 10
+
+`pysim` will list all possible combinations for this values and create a `job` object. Each `job` contains information about the executable and parameters. To execute it, `pysim` lauches a subprocess to take care of that execution. 
+
+##### `EXECUTABLE`
+The path to the executable.
+This is the **only mandatory** field in a `settings.py` file.
+
+##### `CAPTURE_SIGINT`
+Special flag that tels `pysim` to capture all Ctrl-C events. Internally, it notify all handlers registered to `pysim.core.signals.keyboard_interrupt` when SIGINT happens 
+
+##### `PLUGINS`
+Here is the nice feature about `pysim`. You may add new functionality by passing a plugin class here. Plugin classes are called only once. Its constructor is responsible for registering to any signal of interest to capture events throught the execution of `pysim`
+
+At last, we tell `pysim` where to find our settings file and run it.
+
 
 ```
-$ export PYSIM_SETTINGS=simulations.pysim_settings
+$ export PYSIM_SETTINGS=pysim.sample.pysim_settings
 $ python3 -m pysim
+Area(h=2, w=1) = 2
+<Job id=0 status=COMPLETED>
+Area(h=2, w=3) = 6
+<Job id=1 status=COMPLETED>
+Area(h=2, w=5) = 10
+<Job id=2 status=COMPLETED>
+Area(h=2, w=7) = 14
+<Job id=3 status=COMPLETED>
+...
+Area(h=8, w=9) = 72
+<Job id=19 status=COMPLETED>
 ```
 
-Please note that the path to the settings module should be relative to where you will call `pysim`. 
+
 

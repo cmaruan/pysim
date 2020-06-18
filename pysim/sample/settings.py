@@ -1,6 +1,6 @@
 # List of values for each parameter
 HEIGHTS = [2, 4, 6, 8]
-WIDTHS = [3, 5, 7, 9]
+WIDTHS = [1, 3, 5, 7, 9]
 
 ARGS = {
     '--height': HEIGHTS,
@@ -13,7 +13,7 @@ EXECUTABLE = 'pysim/sample/build/rect_area'
 
 # If True, pysim will capture all SIGINT interruptions and
 # send them to pysim.core.signals.keyboard_interrupt.
-# CAPTURE_SIGINT = True
+CAPTURE_SIGINT = True
 
 # Sample plugins 
 PLUGINS = [
