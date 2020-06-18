@@ -50,4 +50,12 @@ STDERR = None
 # cpus available
 PARALLEL_INSTANCES = 1
 
+# If True, pysim will capture all SIGINT interruptions and
+# send them to pysim.core.signals.keyboard_interrupt.
+CAPTURE_SIGINT = False
 
+# Sample plugins 
+PLUGINS = [
+    'pysim.plugins.LogEvents',
+    'pysim.plugins.SaveIntermediaryState',
+]

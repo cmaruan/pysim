@@ -1,5 +1,6 @@
 import os
 import importlib
+import signal as _signal
 from . import global_settings
 
 ENVIRONMENT_VARIABLE = 'PYSIM_SETTINGS'
@@ -37,6 +38,9 @@ class Settings:
             raise ImproperlyConfigured(
                 "The EXECUTABLE value must not be empty"
             )
+
+        if getattr(self, 'CAPTURE_SIGINT'):
+            _signal.signal(_signal.SIGINT, self._sigint_handler)
 
         self.enabled_plugins = []
         for plugin in getattr(self, 'PLUGINS', []):
@@ -126,5 +130,8 @@ class Settings:
                 args.update({var: value})
         return variables, args
 
+    def _sigint_handler(self, signal, frame):
+        from .signals import keyboard_interrupt
+        keyboard_interrupt.send(frame=frame)
 
 settings = Settings()
