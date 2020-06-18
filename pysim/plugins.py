@@ -6,6 +6,7 @@ from pprint import pprint
 from multiprocessing import Manager
 from .core.signals import before_job_starts, after_job_finishes
 from .core.signals import job_completed, cleanup
+from .utils import get_config_folder
 
 class LogEvents:
     def __init__(self, **kwargs):
@@ -25,7 +26,7 @@ class SaveIntermediaryState:
         self.manager = Manager()
         self.current_state = self.manager.dict()
 
-        self.root = os.path.join(os.path.expanduser('~'), '.py-sim')
+        self.root = get_config_folder()
         os.makedirs(self.root, exist_ok=True)
 
         if os.path.exists(os.path.join(self.root, '.unsaved-state')):
