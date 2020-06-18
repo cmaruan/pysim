@@ -8,8 +8,8 @@ from copy import copy, deepcopy
 from queue import Empty as QueueEmpty
 from itertools import count
 
-from .conf import settings
-from . import signals
+from pysim.core.conf import settings
+from pysim.core import signals
 
 
 class Job:

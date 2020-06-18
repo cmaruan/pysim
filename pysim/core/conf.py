@@ -1,7 +1,7 @@
 import os
 import importlib
 import signal as _signal
-from . import global_settings
+from pysim.core import global_settings
 
 ENVIRONMENT_VARIABLE = 'PYSIM_SETTINGS'
 

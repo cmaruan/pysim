@@ -4,9 +4,9 @@ import json
 import pickle
 from pprint import pprint
 from multiprocessing import Manager
-from .core.signals import before_job_starts, after_job_finishes
-from .core.signals import job_completed, cleanup
-from .utils import get_config_folder
+from pysim.core.signals import before_job_starts, after_job_finishes
+from pysim.core.signals import job_completed, cleanup
+from pysim.utils import get_config_folder
 
 class LogEvents:
     def __init__(self, **kwargs):

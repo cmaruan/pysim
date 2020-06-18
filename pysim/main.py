@@ -1,7 +1,7 @@
 import os
 import sys
-from .core.argparser import parser
-from .core.application import Application
+from pysim.core.argparser import parser
+from pysim.core.application import Application
 
 def report(args):
     print("Report".center(60, '-'))

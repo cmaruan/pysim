@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="py-sim", 
-    version="0.1.0",
+    version="0.1.3",
     author="Cristian Maruan Bosin",
     author_email="cmbosin@inf.ufpel.edu.br",
     description="Tool to run parametrized jobs",
